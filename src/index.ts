@@ -1,11 +1,12 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { serve } from "@hono/node-server";
-import { streamText } from "ai";
+import { Output, streamObject, streamText } from "ai";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { stream } from "hono/streaming";
 import "dotenv/config";
+import { z } from "zod";
 
 const app = new Hono();
 
@@ -16,6 +17,9 @@ app.post("/api/chat", async (c) => {
 
   const result = streamText({
     model: anthropic("claude-3-5-haiku-latest"),
+    // experimental_output: Output.object({
+    //   schema: z.object({ jsx: z.string() }),
+    // }),
     messages,
     onError: (err) => console.log(err),
   });
