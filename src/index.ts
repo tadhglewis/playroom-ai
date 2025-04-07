@@ -16,7 +16,7 @@ app.post("/api/chat", async (c) => {
   const { messages } = await c.req.json();
 
   const result = streamText({
-    model: anthropic("claude-3-5-haiku-latest"),
+    model: anthropic("claude-3-7-sonnet-20250219", { sendReasoning: true }),
     // experimental_output: Output.object({
     //   schema: z.object({ jsx: z.string() }),
     // }),
@@ -28,7 +28,9 @@ app.post("/api/chat", async (c) => {
   c.header("X-Vercel-AI-Data-Stream", "v1");
   c.header("Content-Type", "text/plain; charset=utf-8");
 
-  return stream(c, (stream) => stream.pipe(result.toDataStream()));
+  return stream(c, (stream) =>
+    stream.pipe(result.toDataStream({ sendReasoning: true }))
+  );
 });
 
 serve({
